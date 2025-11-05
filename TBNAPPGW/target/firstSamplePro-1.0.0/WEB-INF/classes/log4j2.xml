@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 로키 -->
+<configuration status="WARN">
+
+  <Appenders>
+    <!-- 일반 로그 (일 단위 + 14일 보관) -->
+    <RollingFile name="RollingFile">
+      <FileName>/usr/local/tomcat/tomcat8/logs/gw/gw_log.txt</FileName>
+      <FilePattern>/usr/local/tomcat/tomcat8/logs/gw/gw_log_%d{yyyy-MM-dd}.txt</FilePattern>
+      <PatternLayout>
+        <Pattern>%d %5p [%c] %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30">
+        <Delete basePath="/usr/local/tomcat/tomcat8/logs/gw" maxDepth="1">
+          <IfLastModified age="14d"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+
+    <!-- 에러 로그 (일 단위 + 14일 보관) -->
+    <RollingFile name="RollingFileError">
+      <FileName>/usr/local/tomcat/tomcat8/logs/gw/gw_log_error.txt</FileName>
+      <FilePattern>/usr/local/tomcat/tomcat8/logs/gw/gw_log_error_%d{yyyy-MM-dd}.txt</FilePattern>
+      <PatternLayout>
+        <Pattern>%d %5p [%c] %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+      </Policies>
+      <DefaultRolloverStrategy max="30">
+        <Delete basePath="/usr/local/tomcat/tomcat8/logs/gw" maxDepth="1">
+          <IfLastModified age="14d"/>
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+  </Appenders>
+
+  <Loggers>
+    <Root level="info" additivity="true">
+      <AppenderRef ref="RollingFile"/>
+      <AppenderRef ref="RollingFileError" level="ERROR"/>
+    </Root>
+
+    <Logger name="kr.co.hivesys.gw" level="INFO" additivity="false">
+      <AppenderRef ref="RollingFile"/>
+      <AppenderRef ref="RollingFileError" level="ERROR"/>
+    </Logger>
+
+    <Logger name="java.sql" level="INFO" additivity="false">
+      <AppenderRef ref="RollingFile"/>
+      <AppenderRef ref="RollingFileError" level="ERROR"/>
+    </Logger>
+
+    <Logger name="egovframework" level="INFO" additivity="false">
+      <AppenderRef ref="RollingFile"/>
+      <AppenderRef ref="RollingFileError" level="ERROR"/>
+    </Logger>
+
+    <Logger name="org.springframework" level="WARN" additivity="false">
+      <AppenderRef ref="RollingFile"/>
+      <AppenderRef ref="RollingFileError" level="ERROR"/>
+    </Logger>
+  </Loggers>
+
+</configuration>
+
