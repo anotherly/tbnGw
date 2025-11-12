@@ -49,14 +49,14 @@ public class GwApiController {
             List<ReceiptAppVO> vo = gwService.unionAppReceipt(req);
             //조회한 데이터가 없을 경우
             if(vo.size()==0 || vo == null || vo.isEmpty()) {
-            	 return ResponseEntity.ok(ApiResponseVo.noData());
+            	 return ResponseEntity.ok(ApiResponseVo.noData("데이터 없음"));
             } else {
             	//요청한 제보를 송신함
             	return ResponseEntity.ok(vo);
             }
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.ok(ApiResponseVo.error("404",e.toString()));
+			return ResponseEntity.ok(ApiResponseVo.error(e.toString()));
 		}
     }
 
@@ -75,10 +75,10 @@ public class GwApiController {
         try {
             //제보내용 저장
             gwService.insertReceipt(req);
-            return ResponseEntity.ok(ApiResponseVo.success("제보등록 완료"));
+            return ResponseEntity.ok(ApiResponseVo.success("receiptId",req.getReceiptId()));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.ok(ApiResponseVo.error("404",e.toString()));
+			return ResponseEntity.ok(ApiResponseVo.error(e.toString()));
 		}
 
     }
@@ -100,14 +100,18 @@ public class GwApiController {
     	//제보 id가 유효할 경우 update
     	try {
     		if(req.getReceiptId()!=null && !req.getReceiptId().equals("")) {
-        		gwService.updateReceiptById(req);
-        		return ResponseEntity.ok(ApiResponseVo.success("상황해제 완료"));
+        		int cnt=gwService.updateReceiptById(req);
+        		if (cnt==0) {
+        			return ResponseEntity.ok(ApiResponseVo.noData("해당 id의 제보를 찾을 수 없음"));
+				} else {
+					return ResponseEntity.ok(ApiResponseVo.success("상황해제 완료"));
+				}
         	} else {
-        		return ResponseEntity.ok(ApiResponseVo.noData());
+        		return ResponseEntity.ok(ApiResponseVo.noData("데이터 없음"));
         	}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.ok(ApiResponseVo.error("404",e.toString()));
+			return ResponseEntity.ok(ApiResponseVo.error(e.toString()));
 		}
     }
     

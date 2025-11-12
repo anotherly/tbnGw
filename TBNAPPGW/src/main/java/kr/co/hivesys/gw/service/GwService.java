@@ -11,6 +11,6 @@ public interface GwService {
 	List<ReceiptAppVO> selectLocByPhone(ReceiptAppVO req);
 	String findReportName(ReceiptAppVO req);
 	void insertReceipt(ReceiptAppVO req);
-	void updateReceiptById(ReceiptAppVO req);
+	int updateReceiptById(ReceiptAppVO req);
 	List<ReceiptAppVO> unionAppReceipt(ReceiptAppVO req);
 }

@@ -48,8 +48,8 @@ public class GwServiceImpl implements GwService {
 	}
 
 	@Override
-	public void updateReceiptById(ReceiptAppVO vo) {
-		gwMapper.updateReceiptById(vo);
+	public int updateReceiptById(ReceiptAppVO vo) {
+		return gwMapper.updateReceiptById(vo);
 	}
 
 	@Override

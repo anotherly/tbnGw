@@ -7,6 +7,7 @@
   <resultMap id="ReceiptAppMap" type="receiptAppVO">
     <id column="RECEIPT_ID" property="receiptId"/>
     <result column="RECEIPT_DATE" property="receiptDate"  jdbcType="TIMESTAMP"/>
+    <result column="reqDate" property="reqDate"/>
     <result column="INFORMER_ID" property="informerId"/>
     <result column="LOC_ID" property="locId"/>
     <result column="INFORMER_NAME" property="informerName"/>
@@ -24,6 +25,12 @@
 
   <!-- 제보 저장 시 통신원테이블 정보와 대조하여 정보 있으면 가져올 것 -->
   <insert id="insertReceipt" parameterType="receiptAppVO">
+      
+      <!-- receipt_id 생성  -->
+	  <selectKey keyProperty="receiptId" resultType="string" order="BEFORE">
+	    SELECT 'APP_' || #{phoneCell} || '_' || TO_CHAR(SYSDATE, 'HH24MISS') FROM DUAL
+	  </selectKey>
+      
 	  INSERT INTO RECEIPT_APP (
 	      RECEIPT_ID,
 	      RECEIPT_DATE,
@@ -39,7 +46,7 @@
 	      FLAG_SITU_ED
 	  )
 	  SELECT
-	      'APP_' || #{phoneCell} || '_' || TO_CHAR(SYSDATE, 'HH24MISS') AS RECEIPT_ID,
+	      #{receiptId} as RECEIPT_ID,
 	      SYSDATE AS RECEIPT_DATE,
 	      i.INFORMER_ID AS INFORMER_ID,
 	      <!-- NVL(i.INFORMER_NAME, #{informerName}) AS INFORMER_NAME, -->
@@ -61,11 +68,11 @@
   </insert>
 
   <!-- 상황 해지 시 update -->
-	<select id="updateReceiptById" parameterType="receiptAppVO">
+	<update id="updateReceiptById" parameterType="receiptAppVO">
 		UPDATE RECEIPT_APP
 		SET FLAG_SITU_ED = 2
 		WHERE RECEIPT_ID = #{receiptId}
-	</select>
+	</update>
 
   <!-- 제보내용조회 -->
   <select id="findReportName" parameterType="receiptAppVO" resultType="string">
@@ -144,7 +151,7 @@
 		    flag_situ_ed
 		from receipt_app
 		where area_code=#{areaCode}
-		and RECEIPT_DATE <![CDATA[>=]]> #{reqDate} 
+		and RECEIPT_DATE <![CDATA[>=]]> to_date(#{reqDate} ,'yyyymmddhh24miss') 
 		and flag_situ_ed=1
 		
 		union all 
@@ -164,7 +171,11 @@
 		    '1' as flag_situ_ed
 		from report_receipt_today
 		where region_id= #{areaCode}
-		and receipt_day <![CDATA[ >= ]]> #{reqDate} 
-		and receipt_day <![CDATA[ <= ]]> sysdate    
+		<![CDATA[
+		and receipt_day   >=   to_char(to_date(#{reqDate} ,'yyyymmddhh24miss'),'yyyymmdd')
+        and receipt_time  >=   to_char(to_date(#{reqDate} ,'yyyymmddhh24miss'),'hh24mi')
+		and receipt_day   <=   sysdate
+		]]>
+		
   </select>
 </mapper>

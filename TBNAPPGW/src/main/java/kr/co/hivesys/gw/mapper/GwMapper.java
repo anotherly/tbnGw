@@ -11,7 +11,7 @@ import kr.co.hivesys.gw.vo.ReceiptAppVO;
 @Mapper("gwMapper")
 public interface GwMapper {
     int insertReceipt(ReceiptAppVO vo);
-    ReceiptAppVO updateReceiptById(ReceiptAppVO vo);
+    int updateReceiptById(ReceiptAppVO vo);
     List<ReceiptAppVO>  areaReceipt(ReceiptAppVO vo);
 	List<ReceiptAppVO> selectLocByPhone(ReceiptAppVO vo);
 	void insertUserLoc(ReceiptAppVO vo);

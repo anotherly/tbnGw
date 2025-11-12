@@ -16,23 +16,34 @@ public class ApiResponseVo {
         this.data = data;
     }
 
-    //  성공 응답 (msg 지정)
-    public static ApiResponseVo success(String msg) {
+    // 성공 응답 (msg 지정) 
+    public static ApiResponseVo success(String msg) { 
+    	Map<String, Object> inner = new LinkedHashMap<>(); 
+    	inner.put("data", msg); 
+    	return new ApiResponseVo("200", "success", inner); 
+    }
+    
+    //  성공 응답 (keytype, msg 지정) 오버로딩
+    public static ApiResponseVo success(String keytype,String msg) {
         Map<String, Object> inner = new LinkedHashMap<>();
-        inner.put("data", msg);
+        if(!keytype.equals("") && keytype != null) {
+        	inner.put(keytype, msg);
+        }else {
+        	inner.put("data", msg);
+        }
         return new ApiResponseVo("200", "success", inner);
     }
 
-    // 성공 응답 (data 없음)
-    public static ApiResponseVo noData() {
+    // 연동은 성공했지만 데이터변경 x 또는 조회데이터 x
+    public static ApiResponseVo noData(String msg) {
         Map<String, Object> inner = new LinkedHashMap<>();
-        inner.put("data", "데이터 없음");
+        inner.put("data", msg);
         return new ApiResponseVo("400", "success", inner);
     }
 
     // 에러 응답
-    public static ApiResponseVo error(String code, String message) {
-        return new ApiResponseVo(code, "fail", message);
+    public static ApiResponseVo error(String message) {
+        return new ApiResponseVo("404", "fail", message);
     }
 
     // getter/setter

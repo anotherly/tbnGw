@@ -39,6 +39,15 @@ public class ReceiptAppVO implements Serializable {
 	//전화번호
 	private String phoneCell;
 	
+	//요청시각
+	private String reqDate;
+	
+	public String getReqDate() {
+		return reqDate;
+	}
+	public void setReqDate(String reqDate) {
+		this.reqDate = reqDate;
+	}
 	public String getReportTypeName() {
 		return reportTypeName;
 	}
