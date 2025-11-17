@@ -1,70 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 로키 -->
-<configuration status="WARN">
+<configuration status="DEBUG">
 
-  <Appenders>
-    <!-- 일반 로그 (일 단위 + 14일 보관) -->
-    <RollingFile name="RollingFile">
-      <FileName>/usr/local/tomcat/tomcat8/logs/gw/gw_log.txt</FileName>
-      <FilePattern>/usr/local/tomcat/tomcat8/logs/gw/gw_log_%d{yyyy-MM-dd}.txt</FilePattern>
-      <PatternLayout>
-        <Pattern>%d %5p [%c] %m%n</Pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-      </Policies>
-      <DefaultRolloverStrategy max="30">
-        <Delete basePath="/usr/local/tomcat/tomcat8/logs/gw" maxDepth="1">
-          <IfLastModified age="14d"/>
-        </Delete>
-      </DefaultRolloverStrategy>
-    </RollingFile>
+    <Appenders>
+        <!-- 콘솔 로그 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%c] %m%n"/>
+        </Console>
 
-    <!-- 에러 로그 (일 단위 + 14일 보관) -->
-    <RollingFile name="RollingFileError">
-      <FileName>/usr/local/tomcat/tomcat8/logs/gw/gw_log_error.txt</FileName>
-      <FilePattern>/usr/local/tomcat/tomcat8/logs/gw/gw_log_error_%d{yyyy-MM-dd}.txt</FilePattern>
-      <PatternLayout>
-        <Pattern>%d %5p [%c] %m%n</Pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
-      </Policies>
-      <DefaultRolloverStrategy max="30">
-        <Delete basePath="/usr/local/tomcat/tomcat8/logs/gw" maxDepth="1">
-          <IfLastModified age="14d"/>
-        </Delete>
-      </DefaultRolloverStrategy>
-    </RollingFile>
-  </Appenders>
+        <!-- 일반 로그 (시간 단위 + 10일 보관) -->
+        <RollingFile name="RollingFile">
+            <FileName>C:/tbnapp_log/tbnapp_log.txt</FileName>
+            <FilePattern>C:/tbnapp_log/tbnapp_log_%d{yyyy-MM-dd-HH}.txt</FilePattern>
+            <PatternLayout>
+                <Pattern>%d %5p [%c] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="240">
+                <Delete basePath="C:/tbnapp_log" maxDepth="1">
+                    <IfLastModified age="10d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
 
-  <Loggers>
-    <Root level="info" additivity="true">
-      <AppenderRef ref="RollingFile"/>
-      <AppenderRef ref="RollingFileError" level="ERROR"/>
-    </Root>
+        <!-- 에러 로그 (시간 단위 + 10일 보관) -->
+        <RollingFile name="RollingFileError">
+            <FileName>C:/tbnapp_log/tbnapp_log_error.txt</FileName>
+            <FilePattern>C:/tbnapp_log/tbnapp_log_error_%d{yyyy-MM-dd-HH}.txt</FilePattern>
+            <PatternLayout>
+                <Pattern>%d %5p [%c] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="240">
+                <Delete basePath="C:/tbnapp_log" maxDepth="1">
+                    <IfLastModified age="10d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
 
-    <Logger name="kr.co.hivesys.gw" level="INFO" additivity="false">
-      <AppenderRef ref="RollingFile"/>
-      <AppenderRef ref="RollingFileError" level="ERROR"/>
-    </Logger>
+    </Appenders>
 
-    <Logger name="java.sql" level="INFO" additivity="false">
-      <AppenderRef ref="RollingFile"/>
-      <AppenderRef ref="RollingFileError" level="ERROR"/>
-    </Logger>
+    <Loggers>
+        <Root level="debug" additivity="true">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Root>
 
-    <Logger name="egovframework" level="INFO" additivity="false">
-      <AppenderRef ref="RollingFile"/>
-      <AppenderRef ref="RollingFileError" level="ERROR"/>
-    </Logger>
+        <Logger name="kr.co.wizbrain.tbn" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
 
-    <Logger name="org.springframework" level="WARN" additivity="false">
-      <AppenderRef ref="RollingFile"/>
-      <AppenderRef ref="RollingFileError" level="ERROR"/>
-    </Logger>
-  </Loggers>
+        <Logger name="java.sql" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="egovframework" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="jdbc" level="OFF" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="org.apache.commons.digester" level="ERROR" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+        <Logger name="org.springframework.web" level="DEBUG" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level="ERROR"/>
+        </Logger>
+
+    </Loggers>
 
 </configuration>
-

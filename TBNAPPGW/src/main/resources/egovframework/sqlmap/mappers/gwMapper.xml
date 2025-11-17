@@ -43,7 +43,9 @@
 	      X_COORDINATE,
 	      Y_COORDINATE,
 	      ARTERY_NAME,
-	      FLAG_SITU_ED
+	      FLAG_SITU_ED,
+	      RECEIPT_DAY,
+	      RECEIPT_TIME
 	  )
 	  SELECT
 	      #{receiptId} as RECEIPT_ID,
@@ -55,10 +57,13 @@
 	      #{areaCode} AS AREA_CODE,
 	      #{reportType} AS REPORT_TYPE,
 	      #{phoneCell} AS PHONE_CELL,
-	      #{xCoordinate} AS X_COORDINATE,
-	      #{yCoordinate} AS Y_COORDINATE,
+	      <!-- 제보접수와 모바일 앱간의 x,y좌표가 상이하여 변경 -->
+	      #{yCoordinate} AS X_COORDINATE,
+	      #{xCoordinate} AS Y_COORDINATE,
 	      #{arteryName} AS ARTERY_NAME,
-	      1 AS FLAG_SITU_ED
+	      1 AS FLAG_SITU_ED,
+	      to_date(SYSDATE,'yyyy/mm/dd') AS RECEIPT_DAY,
+	      to_char(SYSDATE,'hh24mi') AS RECEIPT_TIME
 	  FROM DUAL d
 	  LEFT JOIN INFORMER i
 	    ON (   i.PHONE_CELL   = #{phoneCell}
