@@ -80,7 +80,6 @@ public class GwApiController {
 			e.printStackTrace();
 			return ResponseEntity.ok(ApiResponseVo.error(e.toString()));
 		}
-
     }
     
     /**
