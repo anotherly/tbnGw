@@ -62,7 +62,7 @@
 	      #{xCoordinate} AS Y_COORDINATE,
 	      #{arteryName} AS ARTERY_NAME,
 	      1 AS FLAG_SITU_ED,
-	      to_date(SYSDATE,'yyyy/mm/dd') AS RECEIPT_DAY,
+	      to_char(SYSDATE,'yyyymmdd') AS RECEIPT_DAY,
 	      to_char(SYSDATE,'hh24mi') AS RECEIPT_TIME
 	  FROM DUAL d
 	  LEFT JOIN INFORMER i
