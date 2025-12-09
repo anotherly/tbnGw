@@ -13,4 +13,5 @@ public interface GwService {
 	void insertReceipt(ReceiptAppVO req);
 	int updateReceiptById(ReceiptAppVO req);
 	List<ReceiptAppVO> unionAppReceipt(ReceiptAppVO req);
+	void updateReportReceipt(ReceiptAppVO req);
 }

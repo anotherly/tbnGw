@@ -61,4 +61,10 @@ public class GwServiceImpl implements GwService {
 	public List<ReceiptAppVO> unionAppReceipt(ReceiptAppVO vo) {
 		return gwMapper.unionAppReceipt(vo);
 	}
+
+	@Override
+	public void updateReportReceipt(ReceiptAppVO vo) {
+		gwMapper.updateReportReceipt(vo);
+		
+	}
 }

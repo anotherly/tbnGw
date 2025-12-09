@@ -21,6 +21,7 @@
     <result column="ARTERY_NAME" property="arteryName"/>
     <result column="flagLange" property="flagLange"/>
     <result column="FLAG_SITU_ED" property="flagSituEd"/>
+    <result column="flag_important" property="flagImportant"/>
   </resultMap>
 
   <!-- 제보 저장 시 통신원테이블 정보와 대조하여 정보 있으면 가져올 것 -->
@@ -62,7 +63,7 @@
 	      #{xCoordinate} AS Y_COORDINATE,
 	      #{arteryName} AS ARTERY_NAME,
 	      1 AS FLAG_SITU_ED,
-	      to_char(SYSDATE,'yyyymmdd') AS RECEIPT_DAY,
+	      TRUNC(SYSDATE) AS RECEIPT_DAY,
 	      to_char(SYSDATE,'hh24mi') AS RECEIPT_TIME
 	  FROM DUAL d
 	  LEFT JOIN INFORMER i
@@ -76,9 +77,17 @@
 	<update id="updateReceiptById" parameterType="receiptAppVO">
 		UPDATE RECEIPT_APP
 		SET FLAG_SITU_ED = 2
+		,COMMENT_TXT = '[상황해제]' || COMMENT_TXT
 		WHERE RECEIPT_ID = #{receiptId}
 	</update>
 
+	<update id="updateReportReceipt" parameterType="java.lang.String">
+	    UPDATE REPORT_RECEIPT_TODAY
+	    SET MEMO = '[상황해제]' || MEMO
+	    WHERE RECEIPT_ID = #{receiptId}
+	      AND MEMO NOT LIKE '[상황해제]%'
+	</update>
+	
   <!-- 제보내용조회 -->
   <select id="findReportName" parameterType="receiptAppVO" resultType="string">
   	select BAS_NAME from code_report_type where bas_lcod=100 and bas_scod= #{reportType}
@@ -142,7 +151,8 @@
   </select>
   
   <select id="unionAppReceipt" parameterType="receiptAppVO" resultMap="ReceiptAppMap">
-		select 
+
+		SELECT 
 		    receipt_id,
 		    receipt_date,
 		    informer_id,
@@ -153,34 +163,33 @@
 		    phone_cell,
 		    x_coordinate,
 		    y_coordinate,
-		    flag_situ_ed
-		from receipt_app
-		where area_code=#{areaCode}
-		and RECEIPT_DATE <![CDATA[>=]]> to_date(#{reqDate} ,'yyyymmddhh24miss') 
-		and flag_situ_ed=1
+		    flag_situ_ed,
+		    flag_important
+		FROM receipt_app
+		WHERE area_code = #{areaCode}
+		  AND receipt_date <![CDATA[>=]]> TO_TIMESTAMP(#{reqDate}, 'YYYYMMDDHH24MISS')
+		  AND flag_situ_ed = 1
 		
-		union all 
+		UNION ALL
 		
-		select 
+		SELECT 
 		    receipt_id,
-		    to_date(to_char(receipt_day,'yyyymmdd')||replace(receipt_time,' ','')||'00','yyyymmddhh24miss') as receipt_date,
-		    individual_id as informer_id,
-		    individual_name as informer_name,
-		    memo as comment_txt,
-		    region_id as area_code,
+		    TO_DATE(TO_CHAR(receipt_day,'YYYYMMDD') || LPAD(receipt_time,4,'0') || '00', 'YYYYMMDDHH24MISS') AS receipt_date,
+		    individual_id AS informer_id,
+		    individual_name AS informer_name,
+		    memo AS comment_txt,
+		    region_id AS area_code,
 		    report_type,
-		    r_tel as phone_cell,
+		    r_tel AS phone_cell,
 		    x_coordinate,
 		    y_coordinate,
-		    <!-- 제보접수에서 상황 해지된 제보를  -->
-		    '1' as flag_situ_ed
-		from report_receipt_today
-		where region_id= #{areaCode}
-		<![CDATA[
-		and receipt_day   >=   to_char(to_date(#{reqDate} ,'yyyymmddhh24miss'),'yyyymmdd')
-        and receipt_time  >=   to_char(to_date(#{reqDate} ,'yyyymmddhh24miss'),'hh24mi')
-		and receipt_day   <=   sysdate
-		]]>
-		
+		    '1' AS flag_situ_ed,
+		    flag_important
+		FROM report_receipt_today
+		WHERE region_id = #{areaCode}
+		  AND TO_DATE(TO_CHAR(receipt_day,'YYYYMMDD') || LPAD(receipt_time,4,'0') || '00', 'YYYYMMDDHH24MISS')
+		      <![CDATA[>=]]> TO_DATE(#{reqDate}, 'YYYYMMDDHH24MISS')
+
+
   </select>
 </mapper>

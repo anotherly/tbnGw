@@ -1,6 +1,8 @@
 package kr.co.hivesys.gw.web;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -41,23 +43,49 @@ public class GwApiController {
     */	
     @RequestMapping(value="/tbnAppGw/list.do") 
     public ResponseEntity<?> list(@RequestBody ReceiptAppVO req) {
-    	try {
-        	logger.debug("/tbnAppGw/list : "+req);
-            if (req.getReceiptDate() == null)
-                req.setReceiptDate(new Timestamp(System.currentTimeMillis()));
-            //요청정보 (제보내용 관련 ) 을 보내줌
-            List<ReceiptAppVO> vo = gwService.unionAppReceipt(req);
-            //조회한 데이터가 없을 경우
-            if(vo.size()==0 || vo == null || vo.isEmpty()) {
-            	 return ResponseEntity.ok(ApiResponseVo.noData("데이터 없음"));
+        try {
+            logger.debug("/tbnAppGw/list : " + req);
+            // ============================
+            // ★ reqDate 문자열 처리 영역
+            // ============================
+            String d = req.getReqDate();
+            if (d == null || d.trim().isEmpty()) {
+                // reqDate 없으면 → 현재 시각 -30분
+                LocalDateTime nowMinus30 = LocalDateTime.now().minusMinutes(30);
+                // yyyyMMddHHmmss 로 포맷
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+                d = nowMinus30.format(fmt);
+                logger.debug("reqDate 입력 없음 → 30분전 시간 적용: " + d);
+
             } else {
-            	//요청한 제보를 송신함
-            	return ResponseEntity.ok(vo);
+                // reqDate 입력이 있을 때 처리
+                d = d.trim();
+                // 1) ISO: 2025-12-08T01:45:00 → T 제거
+                d = d.replace("T", " ");
+                // 2) yyyy-MM-dd HH:mm:ss → yyyyMMddHHmmss
+                d = d.replace("-", "")
+                     .replace(" ", "")
+                     .replace(":", "");
+                // 3) 초가 없으면 자동으로 추가
+                if (d.length() == 12) { // yyyyMMddHHmm
+                    d += "00";
+                }
+                logger.debug("reqDate 입력값 변환 결과: " + d);
             }
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.ok(ApiResponseVo.error(e.toString()));
-		}
+            // ★ MyBatis 에서 그대로 사용하도록 최종 포맷 저장
+            req.setReqDate(d);
+            // ============================
+            //     서비스 호출
+            // ============================
+            List<ReceiptAppVO> vo = gwService.unionAppReceipt(req);
+            if (vo == null || vo.isEmpty()) {
+                return ResponseEntity.ok(ApiResponseVo.noData("데이터 없음"));
+            }
+            return ResponseEntity.ok(vo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok(ApiResponseVo.error(e.toString()));
+        }
     }
 
     /**
@@ -100,6 +128,7 @@ public class GwApiController {
     	try {
     		if(req.getReceiptId()!=null && !req.getReceiptId().equals("")) {
         		int cnt=gwService.updateReceiptById(req);
+        				gwService.updateReportReceipt(req);
         		if (cnt==0) {
         			return ResponseEntity.ok(ApiResponseVo.noData("해당 id의 제보를 찾을 수 없음"));
 				} else {

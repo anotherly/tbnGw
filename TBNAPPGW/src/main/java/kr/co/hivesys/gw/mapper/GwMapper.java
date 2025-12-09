@@ -17,4 +17,5 @@ public interface GwMapper {
 	void insertUserLoc(ReceiptAppVO vo);
 	String findReportName(ReceiptAppVO vo);
 	List<ReceiptAppVO> unionAppReceipt(ReceiptAppVO vo);
+	void updateReportReceipt(ReceiptAppVO vo);
 }

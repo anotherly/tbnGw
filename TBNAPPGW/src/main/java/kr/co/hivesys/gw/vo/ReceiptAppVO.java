@@ -38,10 +38,17 @@ public class ReceiptAppVO implements Serializable {
 	private String flagSituEd;
 	//전화번호
 	private String phoneCell;
-	
+	//중요제보 여부
+	private String flagImportant;
 	//요청시각
 	private String reqDate;
 	
+	public String getFlagImportant() {
+		return flagImportant;
+	}
+	public void setFlagImportant(String flagImportant) {
+		this.flagImportant = flagImportant;
+	}
 	public String getReqDate() {
 		return reqDate;
 	}
